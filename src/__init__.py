@@ -69,13 +69,6 @@ class UsersList(Resource):
     def get(self):
         '''List all tasks'''
         return DAO.users, 200
-    #@doc_user.doc('create_user')
-    #@doc_user.expect(user)
-    #@doc_user.marshal_with(user, code=201)
-    #def post(self):
-    #    '''Create a new task'''
-    #    resp = api.payload
-    #    return DAO.create(resp['id'], resp['balance']), 201
 
 @doc_balance.route("",doc={'params':{'account_id': 'An user id'}})
 class Balance(Resource):
@@ -137,17 +130,18 @@ class Event(Resource):
             destination = post_data.get('destination')
             amount = post_data.get('amount')
             idx1 ,user1 = DAO.get(origin)
-            if not user1:
-                return 0, 404
             idx2, user2 = DAO.get(destination)
-            if not user2:
+            if not user1:
                 return 0, 404
             if origin == destination:
                 return 0, 404
             if  user1.balance - amount >= 0:
-                DAO.update(user1.id, user1.balance - amount)
-                DAO.update(user2.id, user2.balance + amount)
-                response_object = {"origin":{"id":user1.id,"balance":user1.balance},"destination":{"id":user2.id,"balance":user2.balance}}
+                user1 = DAO.update(user1.id, user1.balance - amount)
+                if not user2:
+                    user2 = DAO.create(destination, amount)
+                else:
+                    user2 = DAO.update(user2.id, user2.balance + amount)
+                response_object = {"origin":{"id":user1.id,"balance":user1.balance},"destination":{"id":user2.id, "balance":user2.balance}}
                 return response_object, 201
             else:
                 return 0,404     
