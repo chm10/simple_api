@@ -16,7 +16,7 @@ Use `docker-compose`.
 
 To run 
 ```bash
-docker-compose up d
+docker-compose up -d
 ```
 
 Go to your favorite browser `localhost:5004`. Will be available an Swagger and documentation.
