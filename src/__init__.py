@@ -3,6 +3,9 @@ from pydoc import describe
 from flask import Flask, request, make_response
 from flask_restx import Api, Resource, fields
 import json
+
+from src.models import UsersDAO
+
 app = Flask(__name__)
 api = Api(app, version='1.0', title='UserMVC API',
     description='A simple UserMVC API',
@@ -22,39 +25,7 @@ event1 = api.model('Operation', {
     'destination': fields.Integer(required=True, default=1234, description='User id'),
     'amount':fields.Integer(required=True, default=15 , description='Value to deposit or withdraw')
 })
-class Users:
-    def __init__(self, id, balance) -> None:
-        self.id = id
-        self.balance = balance
 
-class UsersDAO(object):
-    def __init__(self) -> None:
-        self.users = []
-    def create(self, id, balance):
-        new_user = Users(id, balance)
-        for user in self.users:
-            if user.id == new_user.id:
-                api.abort(404, 0)
-        self.users.append(new_user)
-        return self.users[-1]
-    def get(self, id):
-        for idx,user in enumerate(self.users):
-            if user.id == id:
-                return idx, self.users[idx]
-        return -1, None
-    def update(self, id, balance):
-        idx, user = self.get(id)
-        if user in self.users:
-            self.users[idx].balance = balance
-        else:
-            api.abort(404, 0)
-        return self.users[idx]
-    def delete(self, id):
-        idx, user = self.get(id)
-        self.users.remove(idx)
-
-    
-        
 DAO = UsersDAO()
 DAO.create(0, 100)
 DAO.create(1, 200)
