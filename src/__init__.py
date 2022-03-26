@@ -81,14 +81,14 @@ class UsersList(Resource):
 class Balance(Resource):
     ''''Show the user balance'''
     @doc_balance.doc('show_balance')
-    @doc_balance.response(201, "Success")
+    @doc_balance.response(200, "Success")
     @doc_balance.response(404, "User <user_id> does not exist") 
     def get(self):
         user_id = request.args.get('account_id', None)
-        _, user = DAO.get(int(user_id))
-        if user not in DAO.users:
-            return 404,0
-        return user.balance, 201
+        idx, user = DAO.get(user_id)
+        if user is None:
+            return 0, 404
+        return user.balance, 200
 
 @doc_reset.route("")
 class Reset(Resource):
